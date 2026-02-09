@@ -2,9 +2,10 @@ package org.example;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
-        Calculator calc = new Calculator();
-        int sum = calc.add(5,5);
-        System.out.println(sum);
+        TodoRepository repo = new InMemoryTodoRepository();
+        TodoService service = new TodoService(repo);
+
+        TODO t = service.createTodo("Buy milk");
+        System.out.println("Created todo: id=" + t.getId() + ", text=" + t.getText());
     }
 }
