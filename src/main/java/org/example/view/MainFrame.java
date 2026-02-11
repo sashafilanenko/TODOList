@@ -26,7 +26,7 @@ public class MainFrame extends JFrame {
 
         JPanel inputPanel = new JPanel();
 
-        inputPanel.setLayout(new GridLayout(1, 2, 5,5));
+        inputPanel.setLayout(new GridLayout(1, 3, 5,5));
 
         titleField = new JTextField();
         titleField.setBorder(BorderFactory.createTitledBorder("Заголовок"));
@@ -83,7 +83,6 @@ public class MainFrame extends JFrame {
         });
 
         bottomPanel.add(deleteButton);
-
         add(bottomPanel, BorderLayout.SOUTH);
 
         refreshTaskList();

@@ -60,6 +60,7 @@ public class Task {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", isCompleted=" + isCompleted +
+                ", createAt=" + createAt +
                 '}';
     }
 }
