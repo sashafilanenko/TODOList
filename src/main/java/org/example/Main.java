@@ -3,6 +3,7 @@ package org.example;
 import org.example.controller.TaskController;
 import org.example.model.InMemoryTaskRepository;
 import org.example.model.TaskRepository;
+import org.example.view.GameWindow;
 import org.example.view.MainFrame;
 
 import javax.swing.*;
@@ -19,8 +20,10 @@ public class Main {
 
 
         SwingUtilities.invokeLater(() ->{
-            MainFrame frame = new MainFrame(controller);
-            frame.setVisible(true);
+           // MainFrame frame = new MainFrame(controller);
+            //frame.setVisible(true);
+
+            new GameWindow().setVisible(true);
         });
     }
 }
