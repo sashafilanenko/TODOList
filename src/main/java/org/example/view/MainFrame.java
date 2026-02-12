@@ -5,6 +5,8 @@ import org.example.model.Task;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MainFrame extends JFrame {
 
@@ -26,7 +28,12 @@ public class MainFrame extends JFrame {
 
         JPanel inputPanel = new JPanel();
 
-        inputPanel.setLayout(new GridLayout(1, 3, 5,5));
+        inputPanel.setLayout(new GridLayout(1, 4, 5,5));
+
+        JTextField date = new JTextField();
+        date.setText(getCurrentDate());
+        date.setEditable(false);
+
 
         titleField = new JTextField();
         titleField.setBorder(BorderFactory.createTitledBorder("Заголовок"));
@@ -58,7 +65,7 @@ public class MainFrame extends JFrame {
         inputPanel.add(titleField);
         inputPanel.add(descriptionField);
         inputPanel.add(addButton);
-
+        inputPanel.add(date);
 
         add(inputPanel, BorderLayout.NORTH);
 
@@ -86,6 +93,12 @@ public class MainFrame extends JFrame {
         add(bottomPanel, BorderLayout.SOUTH);
 
         refreshTaskList();
+    }
+
+    private String getCurrentDate() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return now.format(formatter);
     }
 
     private void refreshTaskList() {
