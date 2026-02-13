@@ -6,6 +6,7 @@ import java.util.List;
 public class InMemoryTaskRepository implements TaskRepository{
 
     private List<Task> tasks = new ArrayList<>();
+    private  List<Task> historyTasks = new ArrayList<>();
 
     private int currentId = 1;
 
@@ -16,6 +17,11 @@ public class InMemoryTaskRepository implements TaskRepository{
             currentId++;
             tasks.add(task);
         }
+    }
+
+    @Override
+    public void saveToHistory(Task task){
+        historyTasks.add(task);
     }
 
     @Override

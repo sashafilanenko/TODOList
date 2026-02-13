@@ -18,9 +18,14 @@ public class TaskController {
         return repository.findAll();
     }
 
+
     public void addTask(String title, String category){
         Task newTask = new Task(title, category);
         repository.save(newTask);
+    }
+
+    public void saveToHistory(Task task){
+        repository.saveToHistory(task);
     }
 
     public void deleteTask(int id){
@@ -51,12 +56,5 @@ public class TaskController {
         }
     }
 
-    public void updateTask(int id, String newTitle, String newCategory) {
-        Task task = findTaskById(id);
-        if (task != null) {
-            task.setTitle(newTitle);
-            task.setCategory(newCategory);
-        }
-    }
 
 }

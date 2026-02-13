@@ -9,4 +9,6 @@ public interface TaskRepository {
     void deleteById(int id);
 
     List<Task> findAll();
+
+    void saveToHistory(Task task);
 }
