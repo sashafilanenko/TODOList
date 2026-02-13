@@ -1,5 +1,7 @@
 package org.example.view;
 
+import org.example.controller.TaskController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -12,7 +14,10 @@ public class GameWindow extends JFrame {
     private HallPanel hallPanel;
     private HistoryPannel historyPanel;
 
-    public GameWindow(){
+    private TaskController controller;
+
+    public GameWindow(TaskController controller){
+        this.controller =  controller;
 
         setTitle("μμμ");
         setSize(800, 600);
@@ -78,7 +83,7 @@ public class GameWindow extends JFrame {
 
         menuPanel.add(strikeBar);
 
-        mapPanel = new MapPanel();
+        mapPanel = new MapPanel(controller);
         arenaPanel = new ArenaPanel();
         hallPanel = new HallPanel();
         historyPanel = new HistoryPannel();

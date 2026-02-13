@@ -13,7 +13,6 @@ public class MainFrame extends JFrame {
     private TaskController controller;
     private DefaultListModel<Task> listModel;
     private JList<Task> taskList;
-
     private JTextField titleField;
     private JTextField descriptionField;
 

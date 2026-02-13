@@ -23,7 +23,7 @@ public class Main {
            // MainFrame frame = new MainFrame(controller);
             //frame.setVisible(true);
 
-            new GameWindow().setVisible(true);
+            new GameWindow(controller).setVisible(true);
         });
     }
 }

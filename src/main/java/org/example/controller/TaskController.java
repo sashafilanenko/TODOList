@@ -18,8 +18,8 @@ public class TaskController {
         return repository.findAll();
     }
 
-    public void addTask(String title, String description){
-        Task newTask = new Task(title, description);
+    public void addTask(String title, String category){
+        Task newTask = new Task(title, category);
         repository.save(newTask);
     }
 

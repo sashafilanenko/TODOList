@@ -1,5 +1,7 @@
 package org.example.view;
 
+import org.example.controller.TaskController;
+
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -14,9 +16,11 @@ public class MapPanel extends JPanel {
     private static Component currentDraggingComponent = null;
     private static Point pressPoint = null;
 
+    private TaskController controller;
     private int globalCounter = 1;
 
-    public MapPanel() {
+    public MapPanel(TaskController controller) {
+        this.controller = controller;
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 

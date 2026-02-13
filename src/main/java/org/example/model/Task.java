@@ -6,13 +6,13 @@ public class Task {
 
     private int id;
     private String title;
-    private String description;
+    private String category;
     private boolean isCompleted;
     private LocalDateTime createAt;
 
-    public Task(String title, String description){
+    public Task(String title, String category){
         this.title = title;
-        this.description = description;
+        this.category = category;
         this.isCompleted = false;
         this.createAt = LocalDateTime.now();
     }
@@ -34,12 +34,12 @@ public class Task {
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public String getCategory() {
+        return category;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public boolean isCompleted() {
@@ -56,6 +56,6 @@ public class Task {
 
     @Override
     public String toString(){
-        return "" + title + " " + description;
+        return "" + title;
     }
 }
