@@ -1,6 +1,7 @@
 package org.example.view;
 
 import org.example.controller.TaskController;
+import org.example.Game.GameController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,13 +15,18 @@ public class GameWindow extends JFrame {
     private HallPanel hallPanel;
     private HistoryPannel historyPanel;
 
-
     private TaskController controller;
+    private GameController gameController;
 
-    public GameWindow(TaskController controller){
+    private JTextField textLVL;
+    private JTextField strikeCount;
+    private JTextField progressText;
+    private AvatarPanel avatarPanel;
+    private HealthBar healthBar;
 
-
-        this.controller =  controller;
+    public GameWindow(TaskController controller, GameController gameController) {
+        this.controller = controller;
+        this.gameController = gameController;
 
         setTitle("ммм");
         setSize(1000, 600);
@@ -39,9 +45,9 @@ public class GameWindow extends JFrame {
         JButton btnHall = new JButton("Зал славы");
         JButton btnHis = new JButton("История");
 
-        JTextField textLVL = new JTextField();
-        textLVL.setText("Level 6");
+        textLVL = new JTextField();
         textLVL.setEditable(false);
+        textLVL.setHorizontalAlignment(JTextField.CENTER);
 
         for (JButton btn : new JButton[]{btnMap, btnArena, btnHall, btnHis}) {
             btn.setMaximumSize(btnSize);
@@ -58,12 +64,10 @@ public class GameWindow extends JFrame {
         menuPanel.add(Box.createVerticalStrut(20));
         menuPanel.add(btnHis);
 
+        String avatarPath = gameController.getCharacterAvatar();
+        ImageIcon avatarIcon = new ImageIcon(getClass().getResource(avatarPath));
 
-        ImageIcon avatarIcon = new ImageIcon(
-                getClass().getResource("/avatar.png")
-        );
-
-        AvatarPanel avatarPanel = new AvatarPanel(avatarIcon.getImage(), 120);
+        avatarPanel = new AvatarPanel(avatarIcon.getImage(), 120);
         avatarPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         menuPanel.add(avatarPanel);
@@ -71,13 +75,11 @@ public class GameWindow extends JFrame {
         menuPanel.add(textLVL);
 
         JPanel strikeBar = new JPanel();
-        JTextField strikeCount = new JTextField();
-        strikeCount.setText("5");
+        strikeCount = new JTextField();
         strikeCount.setEditable(false);
+        strikeCount.setHorizontalAlignment(JTextField.CENTER);
 
-        ImageIcon fireImg1 = new ImageIcon(
-                getClass().getResource("/fire.png")
-        );
+        ImageIcon fireImg1 = new ImageIcon(getClass().getResource("/fire.png"));
         AvatarPanel fireImg = new AvatarPanel(fireImg1.getImage(), 20);
         fireImg.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -86,11 +88,8 @@ public class GameWindow extends JFrame {
 
         menuPanel.add(strikeBar);
 
-        arenaPanel = new ArenaPanel(controller);
+        arenaPanel = new ArenaPanel(controller, this);
         mapPanel = new MapPanel(controller, this);
-
-
-
         hallPanel = new HallPanel();
         historyPanel = new HistoryPannel(controller);
 
@@ -116,30 +115,41 @@ public class GameWindow extends JFrame {
         add(menuPanel, BorderLayout.WEST);
         add(mainPanel, BorderLayout.CENTER);
 
-
         JPanel progressPanel = new JPanel(new BorderLayout());
-        JTextField progress = new JTextField();
-        progress.setText("0/250");
-        progress.setEditable(false);
-        progress.setHorizontalAlignment(JTextField.CENTER);
+        progressText = new JTextField();
+        progressText.setEditable(false);
+        progressText.setHorizontalAlignment(JTextField.CENTER);
 
-        HealthBar healthBar = new HealthBar();
+        healthBar = new HealthBar();
 
         progressPanel.add(healthBar, BorderLayout.CENTER);
-        progressPanel.add(progress, BorderLayout.EAST);
+        progressPanel.add(progressText, BorderLayout.EAST);
 
         add(progressPanel, BorderLayout.SOUTH);
 
-        /*
-        new Timer(500, e -> {
-            int newHealth = (int)(Math.random() * 101);
-            healthBar.setHealth(newHealth);
-        }).start();
-
-         */
+        updateCharacterUI();
     }
 
+    public void updateCharacterUI() {
+        textLVL.setText("Level " + gameController.getCharacterLevel());
 
+        strikeCount.setText(String.valueOf(gameController.getCharacterStreak()));
+
+        int currentXP = gameController.getCharacterXP();
+        int nextLevelXP = gameController.getCharacterNextLevelXP();
+        progressText.setText(currentXP + "/" + nextLevelXP);
+
+        int percentage = (int) ((currentXP * 100.0) / nextLevelXP);
+        healthBar.setHealth(percentage);
+
+        String avatarPath = gameController.getCharacterAvatar();
+        try {
+            ImageIcon newAvatarIcon = new ImageIcon(getClass().getResource(avatarPath));
+            avatarPanel.updateImage(newAvatarIcon.getImage());
+        } catch (Exception e) {
+            System.err.println("Не удалось загрузить аватарку: " + avatarPath);
+        }
+    }
 
     public void showArena() {
         cardLayout.show(mainPanel, "ARENA");
@@ -149,10 +159,8 @@ public class GameWindow extends JFrame {
         return arenaPanel;
     }
 
-
     private static class AvatarPanel extends JPanel {
-
-        private final Image image;
+        private Image image;
         private final int size;
 
         public AvatarPanel(Image image, int size) {
@@ -162,6 +170,11 @@ public class GameWindow extends JFrame {
             setMinimumSize(new Dimension(size, size));
             setMaximumSize(new Dimension(size, size));
             setOpaque(false);
+        }
+
+        public void updateImage(Image newImage) {
+            this.image = newImage.getScaledInstance(size, size, Image.SCALE_SMOOTH);
+            repaint();
         }
 
         @Override
@@ -181,7 +194,6 @@ public class GameWindow extends JFrame {
             g2.dispose();
         }
     }
-
 
     private static class HealthBar extends JPanel {
         private int health = 100;
@@ -210,5 +222,4 @@ public class GameWindow extends JFrame {
             g.drawRect(0, 0, width - 1, height - 1);
         }
     }
-
 }

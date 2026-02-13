@@ -13,6 +13,7 @@ import java.util.Map;
 
 public class ArenaPanel extends JPanel {
 
+    private GameWindow gameWindow;
     private TaskController controller;
     private String currentCategory;
     private Color currentCategoryColor;
@@ -34,8 +35,9 @@ public class ArenaPanel extends JPanel {
         CATEGORY_COLORS.put("Желтая зона", new Color(255, 255, 220));
     }
 
-    public ArenaPanel(TaskController controller) {
+    public ArenaPanel(TaskController controller, GameWindow gameWindow) {
         this.controller = controller;
+        this.gameWindow = gameWindow;
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -43,8 +45,8 @@ public class ArenaPanel extends JPanel {
         initializeComponents();
     }
 
-    private void initializeComponents() {
 
+    private void initializeComponents() {
         JPanel mainPanel = new JPanel(new BorderLayout(20, 0));
         mainPanel.setBackground(Color.WHITE);
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -199,6 +201,7 @@ public class ArenaPanel extends JPanel {
                 controller.deleteTask(task.getId());
                 System.out.println("========== Удаление задачи ID:" + task.getId() + " ==========");
                 loadTasks();
+                gameWindow.updateCharacterUI(); // Теперь это работает!
             }
         });
 

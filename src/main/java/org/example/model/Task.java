@@ -9,6 +9,11 @@ public class Task {
     private String category;
     private boolean isCompleted;
     private LocalDateTime createAt;
+    private LocalDateTime completeAt;
+
+    public Task() {
+        this.createAt = LocalDateTime.now();
+    }
 
     public Task(String title, String category){
         this.title = title;
@@ -52,6 +57,14 @@ public class Task {
 
     public LocalDateTime getCreateAt() {
         return createAt;
+    }
+
+    public LocalDateTime getCompleteAt(){
+        return completeAt;
+    }
+
+    public void setCompleteAt(LocalDateTime completeAt) {
+        this.completeAt = completeAt;
     }
 
     @Override

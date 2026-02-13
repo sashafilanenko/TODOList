@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.Game.GameController;
 import org.example.controller.TaskController;
 import org.example.model.InMemoryTaskRepository;
 import org.example.model.TaskRepository;
@@ -12,10 +13,12 @@ public class Main {
 
         TaskRepository repository = new InMemoryTaskRepository();
 
-        TaskController controller = new TaskController(repository);
+        GameController gameController = new GameController();
+
+        TaskController controller = new TaskController(repository, gameController);
 
         SwingUtilities.invokeLater(() ->{
-            new GameWindow(controller).setVisible(true);
+            new GameWindow(controller, gameController).setVisible(true);
         });
     }
 }

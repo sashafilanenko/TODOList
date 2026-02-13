@@ -272,9 +272,8 @@ public class MapPanel extends JPanel {
         }
 
         private void deleteBlock() {
-            Task task = controller.findTaskById(taskId);
-            controller.saveToHistory(task);
             controller.deleteTask(taskId);
+            gameWindow.updateCharacterUI();
             printAllTasks("Удаление задачи ID:" + taskId);
 
             Container parent = this.getParent();

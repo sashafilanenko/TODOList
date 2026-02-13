@@ -1,5 +1,6 @@
 package org.example.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +23,21 @@ public class InMemoryTaskRepository implements TaskRepository{
     @Override
     public void saveToHistory(Task task){
         historyTasks.add(task);
+        task.setCompleteAt(LocalDateTime.now());
     }
 
     @Override
-    public void deleteById(int id){
-        tasks.removeIf(t -> t.getId() == id);
+    public void deleteById(int id) {
+        Task taskToDelete = tasks.stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (taskToDelete != null) {
+            saveToHistory(taskToDelete);
+
+            tasks.remove(taskToDelete);
+        }
     }
 
     @Override

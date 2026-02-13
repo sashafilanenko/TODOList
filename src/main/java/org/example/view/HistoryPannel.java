@@ -121,16 +121,16 @@ public class HistoryPannel extends JPanel {
         titleLabel.setHorizontalAlignment(SwingConstants.LEFT);
         panel.add(titleLabel, BorderLayout.CENTER);
 
-        if (task.getCreateAt() != null) {
+        if (task.getCompleteAt() != null) {
             JPanel rightPanel = new JPanel();
             rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
             rightPanel.setBackground(categoryColor);
             rightPanel.setBorder(new EmptyBorder(5, 10, 5, 10));
 
-            JLabel dateLabel = new JLabel("Создано:");
+            JLabel dateLabel = new JLabel("Выполнено:");
             dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 10));
 
-            JLabel timeLabel = new JLabel(formatDateTime(task.getCreateAt()));
+            JLabel timeLabel = new JLabel(formatDateTime(task.getCompleteAt()));
             timeLabel.setFont(new Font("SansSerif", Font.BOLD, 11));
 
             rightPanel.add(dateLabel);
