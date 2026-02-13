@@ -14,13 +14,16 @@ public class GameWindow extends JFrame {
     private HallPanel hallPanel;
     private HistoryPannel historyPanel;
 
+
     private TaskController controller;
 
     public GameWindow(TaskController controller){
+
+
         this.controller =  controller;
 
         setTitle("μμμ");
-        setSize(800, 600);
+        setSize(1000, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -83,8 +86,11 @@ public class GameWindow extends JFrame {
 
         menuPanel.add(strikeBar);
 
-        mapPanel = new MapPanel(controller);
-        arenaPanel = new ArenaPanel();
+        arenaPanel = new ArenaPanel(controller);
+        mapPanel = new MapPanel(controller, this);
+
+
+
         hallPanel = new HallPanel();
         historyPanel = new HistoryPannel();
 
@@ -96,7 +102,10 @@ public class GameWindow extends JFrame {
         mainPanel.add(hallPanel, "HALL");
         mainPanel.add(historyPanel, "History");
 
-        btnMap.addActionListener(e -> cardLayout.show(mainPanel, "MAP"));
+        btnMap.addActionListener(e -> {
+            cardLayout.show(mainPanel, "MAP");
+            mapPanel.refreshAllTasks();
+        });
         btnArena.addActionListener(e -> cardLayout.show(mainPanel, "ARENA"));
         btnHall.addActionListener(e -> cardLayout.show(mainPanel, "HALL"));
         btnHis.addActionListener(e -> cardLayout.show(mainPanel, "History"));
@@ -125,6 +134,16 @@ public class GameWindow extends JFrame {
         }).start();
 
          */
+    }
+
+
+
+    public void showArena() {
+        cardLayout.show(mainPanel, "ARENA");
+    }
+
+    public ArenaPanel getArenaPanel() {
+        return arenaPanel;
     }
 
 

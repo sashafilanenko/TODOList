@@ -17,20 +17,19 @@ import java.util.Map;
 
 public class MapPanel extends JPanel {
 
+    private GameWindow gameWindow;
     private static Component currentDraggingComponent = null;
     private static Point pressPoint = null;
-
     private TaskController controller;
     private int globalCounter = 1;
-
     private Map<String, KanbanColumn> categoryToColumn;
-
     private static final String RED_ZONE = "Красная зона";
     private static final String GREEN_ZONE = "Зеленая зона";
     private static final String BLUE_ZONE = "Синяя зона";
     private static final String YELLOW_ZONE = "Желтая зона";
 
-    public MapPanel(TaskController controller) {
+    public MapPanel(TaskController controller, GameWindow gameWindow) {
+        this.gameWindow = gameWindow;
         this.controller = controller;
         this.categoryToColumn = new HashMap<>();
 
@@ -121,6 +120,28 @@ public class MapPanel extends JPanel {
             header.setBackground(color.darker());
             header.setForeground(Color.WHITE);
             header.setBorder(new EmptyBorder(5, 5, 5, 5));
+            header.setFont(new Font("Serif", Font.BOLD, 16));
+
+            header.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            header.setToolTipText("Нажмите для перехода в арену");
+            header.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    gameWindow.getArenaPanel().loadCategory(categoryName);
+                    gameWindow.showArena();
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    header.setBackground(color.darker().darker());
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    header.setBackground(color.darker());
+                }
+            });
+
             visualCard.add(header, BorderLayout.NORTH);
 
             contentPanel = new JPanel();
@@ -145,12 +166,6 @@ public class MapPanel extends JPanel {
             visualCard.add(btnPanel, BorderLayout.SOUTH);
 
             add(visualCard, BorderLayout.NORTH);
-        }
-
-        public void addNewBlock(String text) {
-            controller.addTask(text, categoryName);
-            printAllTasks("Добавление блока: " + text);
-            refreshAllTasks();
         }
 
         public void addExistingBlock(int taskId, String text) {
@@ -222,7 +237,6 @@ public class MapPanel extends JPanel {
             textField.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
             textField.addActionListener(e -> updateTaskTitle());
-
             textField.addFocusListener(new java.awt.event.FocusAdapter() {
                 @Override
                 public void focusLost(java.awt.event.FocusEvent e) {
@@ -253,14 +267,10 @@ public class MapPanel extends JPanel {
             }
 
             controller.updateTask(taskId, newTitle);
-
             printAllTasks("Обновление текста задачи ID:" + taskId + " -> \"" + newTitle + "\"");
-
             originalText = newTitle;
-
-            revalidate();
-            repaint();
         }
+
         private void deleteBlock() {
             controller.deleteTask(taskId);
             printAllTasks("Удаление задачи ID:" + taskId);
@@ -293,10 +303,6 @@ public class MapPanel extends JPanel {
 
         public int getTaskId() {
             return taskId;
-        }
-
-        public void setTaskId(int taskId) {
-            this.taskId = taskId;
         }
 
         private KanbanColumn findParentColumn(Component comp) {
@@ -348,9 +354,7 @@ public class MapPanel extends JPanel {
                 String newCategory = targetColumn.getCategoryName();
 
                 controller.updateTaskCategory(taskId, newCategory);
-
                 printAllTasks("Перемещение задачи ID:" + taskId + " в " + newCategory);
-
                 refreshAllTasks();
             }
 
