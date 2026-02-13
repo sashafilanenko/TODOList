@@ -10,5 +10,7 @@ public interface TaskRepository {
 
     List<Task> findAll();
 
+    List<Task> findAllHistory();
+
     void saveToHistory(Task task);
 }

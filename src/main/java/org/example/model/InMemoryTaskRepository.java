@@ -33,4 +33,9 @@ public class InMemoryTaskRepository implements TaskRepository{
     public List<Task> findAll(){
         return new ArrayList<>(tasks);
     }
+
+    @Override
+    public List<Task> findAllHistory(){
+        return new ArrayList<>(historyTasks);
+    }
 }

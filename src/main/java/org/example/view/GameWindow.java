@@ -92,7 +92,7 @@ public class GameWindow extends JFrame {
 
 
         hallPanel = new HallPanel();
-        historyPanel = new HistoryPannel();
+        historyPanel = new HistoryPannel(controller);
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
@@ -108,7 +108,10 @@ public class GameWindow extends JFrame {
         });
         btnArena.addActionListener(e -> cardLayout.show(mainPanel, "ARENA"));
         btnHall.addActionListener(e -> cardLayout.show(mainPanel, "HALL"));
-        btnHis.addActionListener(e -> cardLayout.show(mainPanel, "History"));
+        btnHis.addActionListener(e -> {
+            cardLayout.show(mainPanel, "History");
+            historyPanel.refreshHistory();
+        });
 
         add(menuPanel, BorderLayout.WEST);
         add(mainPanel, BorderLayout.CENTER);

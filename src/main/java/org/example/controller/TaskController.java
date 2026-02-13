@@ -28,6 +28,10 @@ public class TaskController {
         repository.saveToHistory(task);
     }
 
+    public List<Task> getAllHistoryTasks(){
+        return repository.findAll();
+    }
+
     public void deleteTask(int id){
         repository.deleteById(id);
     }
