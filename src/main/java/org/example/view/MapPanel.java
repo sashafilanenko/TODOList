@@ -1,6 +1,7 @@
 package org.example.view;
 
 import org.example.controller.TaskController;
+import org.example.model.Task;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -10,6 +11,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MapPanel extends JPanel {
 
@@ -19,8 +23,17 @@ public class MapPanel extends JPanel {
     private TaskController controller;
     private int globalCounter = 1;
 
+    private Map<String, KanbanColumn> categoryToColumn;
+
+    private static final String RED_ZONE = "Красная зона";
+    private static final String GREEN_ZONE = "Зеленая зона";
+    private static final String BLUE_ZONE = "Синяя зона";
+    private static final String YELLOW_ZONE = "Желтая зона";
+
     public MapPanel(TaskController controller) {
         this.controller = controller;
+        this.categoryToColumn = new HashMap<>();
+
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
@@ -29,30 +42,73 @@ public class MapPanel extends JPanel {
         title.setBorder(new EmptyBorder(10, 0, 10, 0));
         add(title, BorderLayout.NORTH);
 
-
         JPanel centerGrid = new JPanel(new GridLayout(2, 2, 10, 10));
         centerGrid.setBackground(new Color(230, 230, 230));
         centerGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
 
+        KanbanColumn redColumn = new KanbanColumn(new Color(255, 220, 220), RED_ZONE);
+        KanbanColumn greenColumn = new KanbanColumn(new Color(220, 255, 220), GREEN_ZONE);
+        KanbanColumn blueColumn = new KanbanColumn(new Color(220, 220, 255), BLUE_ZONE);
+        KanbanColumn yellowColumn = new KanbanColumn(new Color(255, 255, 220), YELLOW_ZONE);
 
-        centerGrid.add(new KanbanColumn(new Color(255, 220, 220), "Красная зона"));
-        centerGrid.add(new KanbanColumn(new Color(220, 255, 220), "Зеленая зона"));
-        centerGrid.add(new KanbanColumn(new Color(220, 220, 255), "Синяя зона"));
-        centerGrid.add(new KanbanColumn(new Color(255, 255, 220), "Желтая зона"));
+        categoryToColumn.put(RED_ZONE, redColumn);
+        categoryToColumn.put(GREEN_ZONE, greenColumn);
+        categoryToColumn.put(BLUE_ZONE, blueColumn);
+        categoryToColumn.put(YELLOW_ZONE, yellowColumn);
 
+        centerGrid.add(redColumn);
+        centerGrid.add(greenColumn);
+        centerGrid.add(blueColumn);
+        centerGrid.add(yellowColumn);
 
         JScrollPane globalScrollPane = new JScrollPane(centerGrid);
         globalScrollPane.setBorder(null);
         globalScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         add(globalScrollPane, BorderLayout.CENTER);
+
+        loadTasksFromController();
+        printAllTasks("Инициализация");
     }
 
+    private void printAllTasks(String action) {
+        System.out.println("\n========== " + action + " ==========");
+        List<Task> tasks = controller.getAllTasks();
+        if (tasks.isEmpty()) {
+            System.out.println("Список задач пуст");
+        } else {
+            System.out.println("Всего задач: " + tasks.size());
+            for (Task task : tasks) {
+                System.out.println("  ID: " + task.getId() +
+                        " | Название: " + task.getTitle() +
+                        " | Категория: " + task.getCategory());
+            }
+        }
+        System.out.println("================================\n");
+    }
+
+    private void loadTasksFromController() {
+        List<Task> tasks = controller.getAllTasks();
+        for (Task task : tasks) {
+            KanbanColumn column = categoryToColumn.get(task.getCategory());
+            if (column != null) {
+                column.addExistingBlock(task.getId(), task.getTitle());
+            }
+        }
+    }
+
+    public void refreshAllTasks() {
+        for (KanbanColumn column : categoryToColumn.values()) {
+            column.clearAllBlocks();
+        }
+        loadTasksFromController();
+    }
 
     class KanbanColumn extends JPanel {
         private final JPanel contentPanel;
+        private final String categoryName;
 
         public KanbanColumn(Color color, String name) {
-
+            this.categoryName = name;
             setLayout(new BorderLayout());
             setOpaque(false);
 
@@ -76,7 +132,10 @@ public class MapPanel extends JPanel {
             JButton addBtn = new JButton(" + Добавить блок");
             addBtn.setFocusPainted(false);
             addBtn.addActionListener((ActionEvent e) -> {
-                addNewBlock("Запись #" + globalCounter++);
+                String newTitle = "Запись #" + globalCounter++;
+                controller.addTask(newTitle, categoryName);
+                printAllTasks("Добавление задачи: " + newTitle);
+                refreshAllTasks();
             });
 
             JPanel btnPanel = new JPanel(new BorderLayout());
@@ -86,18 +145,27 @@ public class MapPanel extends JPanel {
             visualCard.add(btnPanel, BorderLayout.SOUTH);
 
             add(visualCard, BorderLayout.NORTH);
-
-            addNewBlock("Стартовый юнит");
         }
 
         public void addNewBlock(String text) {
-            DraggableBlock block = new DraggableBlock(text);
+            controller.addTask(text, categoryName);
+            printAllTasks("Добавление блока: " + text);
+            refreshAllTasks();
+        }
+
+        public void addExistingBlock(int taskId, String text) {
+            DraggableBlock block = new DraggableBlock(taskId, text);
             contentPanel.add(block);
             refreshUI();
         }
 
         public void acceptBlock(DraggableBlock block) {
             contentPanel.add(block);
+            refreshUI();
+        }
+
+        public void clearAllBlocks() {
+            contentPanel.removeAll();
             refreshUI();
         }
 
@@ -110,14 +178,22 @@ public class MapPanel extends JPanel {
                 }
             }
         }
+
+        public String getCategoryName() {
+            return categoryName;
+        }
     }
 
     class DraggableBlock extends JPanel {
         private JTextField textField;
         private JCheckBox deleteCheckBox;
-        private java.util.List<String> tasks; // Список задач для этого блока
+        private int taskId;
+        private String originalText;
 
-        public DraggableBlock(String text) {
+        public DraggableBlock(int taskId, String text) {
+            this.taskId = taskId;
+            this.originalText = text;
+
             setLayout(new BorderLayout());
             setBackground(Color.WHITE);
             setBorder(new CompoundBorder(
@@ -130,13 +206,6 @@ public class MapPanel extends JPanel {
             setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
             setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            // Инициализируем список задач
-            tasks = new java.util.ArrayList<>();
-            tasks.add("Подзадача 1");
-            tasks.add("Подзадача 2");
-            tasks.add("Подзадача 3");
-
-            // Чекбокс для удаления
             deleteCheckBox = new JCheckBox();
             deleteCheckBox.setBackground(Color.WHITE);
             deleteCheckBox.setToolTipText("Отметить для удаления");
@@ -146,14 +215,24 @@ public class MapPanel extends JPanel {
                 }
             });
 
-            // Текстовое поле
             textField = new JTextField(text);
             textField.setHorizontalAlignment(JTextField.CENTER);
             textField.setBackground(Color.WHITE);
             textField.setBorder(new EmptyBorder(5, 10, 5, 10));
             textField.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-            // Панель для чекбокса
+            textField.addActionListener(e -> updateTaskTitle());
+
+            textField.addFocusListener(new java.awt.event.FocusAdapter() {
+                @Override
+                public void focusLost(java.awt.event.FocusEvent e) {
+                    String currentText = textField.getText();
+                    if (!currentText.equals(originalText)) {
+                        updateTaskTitle();
+                    }
+                }
+            });
+
             JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
             leftPanel.setBackground(Color.WHITE);
             leftPanel.add(deleteCheckBox);
@@ -161,13 +240,31 @@ public class MapPanel extends JPanel {
             add(leftPanel, BorderLayout.WEST);
             add(textField, BorderLayout.CENTER);
 
-            // Drag-and-drop слушатель
             DragMouseAdapter listener = new DragMouseAdapter();
             addMouseListener(listener);
             addMouseMotionListener(listener);
         }
 
+        private void updateTaskTitle() {
+            String newTitle = textField.getText().trim();
+
+            if (newTitle.equals(originalText) || newTitle.isEmpty()) {
+                return;
+            }
+
+            controller.updateTask(taskId, newTitle);
+
+            printAllTasks("Обновление текста задачи ID:" + taskId + " -> \"" + newTitle + "\"");
+
+            originalText = newTitle;
+
+            revalidate();
+            repaint();
+        }
         private void deleteBlock() {
+            controller.deleteTask(taskId);
+            printAllTasks("Удаление задачи ID:" + taskId);
+
             Container parent = this.getParent();
             if (parent != null) {
                 parent.remove(this);
@@ -191,23 +288,25 @@ public class MapPanel extends JPanel {
 
         public void setText(String text) {
             textField.setText(text);
+            originalText = text;
         }
 
-        // Получить список задач
-        public java.util.List<String> getTasks() {
-            return tasks;
+        public int getTaskId() {
+            return taskId;
         }
 
-        // Добавить задачу
-        public void addTask(String task) {
-            tasks.add(task);
+        public void setTaskId(int taskId) {
+            this.taskId = taskId;
         }
 
-        // Удалить задачу
-        public void removeTask(int index) {
-            if (index >= 0 && index < tasks.size()) {
-                tasks.remove(index);
+        private KanbanColumn findParentColumn(Component comp) {
+            while (comp != null) {
+                if (comp instanceof KanbanColumn) {
+                    return (KanbanColumn) comp;
+                }
+                comp = comp.getParent();
             }
+            return null;
         }
     }
 
@@ -244,15 +343,15 @@ public class MapPanel extends JPanel {
             KanbanColumn sourceColumn = findParentColumn(currentDraggingComponent);
 
             if (targetColumn != null && targetColumn != sourceColumn) {
-                Container oldParent = currentDraggingComponent.getParent();
-                if (oldParent != null) {
-                    oldParent.remove(currentDraggingComponent);
-                    oldParent.revalidate();
-                    oldParent.repaint();
-                }
-                targetColumn.acceptBlock((DraggableBlock) currentDraggingComponent);
+                DraggableBlock block = (DraggableBlock) currentDraggingComponent;
+                int taskId = block.getTaskId();
+                String newCategory = targetColumn.getCategoryName();
 
-                SwingUtilities.getWindowAncestor(targetColumn).revalidate();
+                controller.updateTaskCategory(taskId, newCategory);
+
+                printAllTasks("Перемещение задачи ID:" + taskId + " в " + newCategory);
+
+                refreshAllTasks();
             }
 
             currentDraggingComponent = null;

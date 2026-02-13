@@ -26,4 +26,37 @@ public class TaskController {
     public void deleteTask(int id){
         repository.deleteById(id);
     }
+
+
+    public Task findTaskById(int id) {
+        for (Task task : getAllTasks()) {
+            if (task.getId() == id) {
+                return task;
+            }
+        }
+        return null;
+    }
+
+    public void updateTask(int id, String newTitle) {
+        Task task = findTaskById(id);
+        if (task != null) {
+            task.setTitle(newTitle);
+        }
+    }
+
+    public void updateTaskCategory(int id, String newCategory) {
+        Task task = findTaskById(id);
+        if (task != null) {
+            task.setCategory(newCategory);
+        }
+    }
+
+    public void updateTask(int id, String newTitle, String newCategory) {
+        Task task = findTaskById(id);
+        if (task != null) {
+            task.setTitle(newTitle);
+            task.setCategory(newCategory);
+        }
+    }
+
 }
