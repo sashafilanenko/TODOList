@@ -41,7 +41,6 @@ public class GameWindow extends JFrame {
         Dimension btnSize = new Dimension(180, 60);
 
         JButton btnMap = new JButton("Карта");
-        JButton btnArena = new JButton("Арена");
         JButton btnHall = new JButton("Зал славы");
         JButton btnHis = new JButton("История");
 
@@ -49,7 +48,7 @@ public class GameWindow extends JFrame {
         textLVL.setEditable(false);
         textLVL.setHorizontalAlignment(JTextField.CENTER);
 
-        for (JButton btn : new JButton[]{btnMap, btnArena, btnHall, btnHis}) {
+        for (JButton btn : new JButton[]{btnMap, btnHall, btnHis}) {
             btn.setMaximumSize(btnSize);
             btn.setPreferredSize(btnSize);
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -57,8 +56,6 @@ public class GameWindow extends JFrame {
 
         menuPanel.add(Box.createVerticalStrut(20));
         menuPanel.add(btnMap);
-        menuPanel.add(Box.createVerticalStrut(20));
-        menuPanel.add(btnArena);
         menuPanel.add(Box.createVerticalStrut(20));
         menuPanel.add(btnHall);
         menuPanel.add(Box.createVerticalStrut(20));
@@ -105,7 +102,6 @@ public class GameWindow extends JFrame {
             cardLayout.show(mainPanel, "MAP");
             mapPanel.refreshAllTasks();
         });
-        btnArena.addActionListener(e -> cardLayout.show(mainPanel, "ARENA"));
         btnHall.addActionListener(e -> cardLayout.show(mainPanel, "HALL"));
         btnHis.addActionListener(e -> {
             cardLayout.show(mainPanel, "History");
