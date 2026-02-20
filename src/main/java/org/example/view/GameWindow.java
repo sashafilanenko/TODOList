@@ -85,7 +85,7 @@ public class GameWindow extends JFrame {
 
         menuPanel.add(strikeBar);
 
-        arenaPanel = new ArenaPanel(controller, this);
+        arenaPanel = new ArenaPanel(controller, this, gameController);
         mapPanel = new MapPanel(controller, this);
         hallPanel = new HallPanel();
         historyPanel = new HistoryPannel(controller);

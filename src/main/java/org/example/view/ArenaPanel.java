@@ -1,5 +1,6 @@
 package org.example.view;
 
+import org.example.Game.GameController;
 import org.example.controller.TaskController;
 import org.example.model.Task;
 
@@ -27,6 +28,8 @@ public class ArenaPanel extends JPanel {
     private JPanel tasksPanel;
     private JPanel leftPanel;
 
+    GameController gameController;
+
     private static final Map<String, Color> CATEGORY_COLORS = new HashMap<>();
     static {
         CATEGORY_COLORS.put("Красная зона", new Color(255, 220, 220));
@@ -35,9 +38,11 @@ public class ArenaPanel extends JPanel {
         CATEGORY_COLORS.put("Желтая зона", new Color(255, 255, 220));
     }
 
-    public ArenaPanel(TaskController controller, GameWindow gameWindow) {
+
+    public ArenaPanel(TaskController controller, GameWindow gameWindow, GameController gameController) {
         this.controller = controller;
         this.gameWindow = gameWindow;
+        this.gameController = gameController;
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -201,7 +206,7 @@ public class ArenaPanel extends JPanel {
                 controller.deleteTask(task.getId());
                 System.out.println("========== Удаление задачи ID:" + task.getId() + " ==========");
                 loadTasks();
-                gameWindow.updateCharacterUI(); // Теперь это работает!
+                gameWindow.updateCharacterUI();
             }
         });
 
@@ -223,6 +228,8 @@ public class ArenaPanel extends JPanel {
             isRunning = false;
             timer.stop();
             System.out.println("Таймер остановлен");
+            gameController.addXPToCharacter(-20);
+            gameWindow.updateCharacterUI();
         }
     }
 
