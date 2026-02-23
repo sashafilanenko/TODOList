@@ -30,6 +30,10 @@ public class ArenaPanel extends JPanel {
 
     GameController gameController;
 
+    private int pomodoroCount = 0;
+    private boolean isBreakPhase = false;
+    private int streakMultiplierLevel = 0;
+
     private static final Map<String, Color> CATEGORY_COLORS = new HashMap<>();
     static {
         CATEGORY_COLORS.put("Красная зона", new Color(255, 220, 220));
