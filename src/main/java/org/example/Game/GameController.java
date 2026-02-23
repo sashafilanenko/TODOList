@@ -2,9 +2,11 @@ package org.example.Game;
 
 public class GameController {
     private Character character;
+    private DailyStreakService dailyStreakService;
 
     public GameController() {
         this.character = new Character();
+        this.dailyStreakService = new DailyStreakService();
     }
 
     public int getCharacterLevel() {
@@ -19,16 +21,20 @@ public class GameController {
         return character.getNextLevelXP();
     }
 
-    public int getCharacterStreak() {
-        return character.getStreak();
-    }
-
     public String getCharacterAvatar() {
         return character.getCurrentAvatar();
     }
 
     public void addXPToCharacter(int xp) {
         character.addXP(xp);
+    }
+
+    public Character getCharacter() {
+        return character;
+    }
+
+    public int getCharacterStreak() {
+        return character.getStreak();
     }
 
     public void incrementCharacterStreak() {
@@ -39,7 +45,30 @@ public class GameController {
         character.resetStreak();
     }
 
-    public Character getCharacter() {
-        return character;
+    public int getDailyStreak() {
+        return dailyStreakService.getStreak();
+    }
+
+    public String getDailyStreakLabel() {
+        return dailyStreakService.getStreakLabel();
+    }
+
+    public double getDailyStreakMultiplier() {
+        return dailyStreakService.getStreakMultiplier();
+    }
+
+    public void onTaskCompleted() {
+        dailyStreakService.markActiveToday();
+    }
+
+    public int calculateAndAddXP(int baseXP, double pomodoroMultiplier) {
+        double dailyMultiplier = dailyStreakService.getStreakMultiplier();
+        int total = (int)(baseXP * pomodoroMultiplier * dailyMultiplier);
+        character.addXP(total);
+
+        System.out.printf("[XP] Базовый: %d ? помодоро %.1f ? стрик %.1f = +%d XP%n",
+                baseXP, pomodoroMultiplier, dailyMultiplier, total);
+
+        return total;
     }
 }

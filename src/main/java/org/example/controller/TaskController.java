@@ -16,39 +16,39 @@ public class TaskController {
         this.gameController = gameController;
     }
 
-    public List<Task> getAllTasks(){
+    public List<Task> getAllTasks() {
         return repository.findAll();
     }
 
-    public void addTask(String title, String category){
+    public void addTask(String title, String category) {
         Task newTask = new Task(title, category);
         repository.save(newTask);
     }
 
-    public void saveToHistory(Task task){
+    public void saveToHistory(Task task) {
         repository.saveToHistory(task);
     }
 
-    public List<Task> getAllHistoryTasks(){
+    public List<Task> getAllHistoryTasks() {
         return repository.findAllHistory();
     }
 
-    public void deleteTask(int id){
+    public void deleteTask(int id) {
         Task task = findTaskById(id);
-
 
         if (task != null) {
             String cat = task.getCategory();
 
-            switch (cat){
+            switch (cat) {
                 case "Красная зона" -> gameController.addXPToCharacter(40);
                 case "Зеленая зона" -> gameController.addXPToCharacter(30);
-                case "Синяя зона" -> gameController.addXPToCharacter(20);
-                case "Желтая зона" -> gameController.addXPToCharacter(10);
+                case "Синяя зона"   -> gameController.addXPToCharacter(20);
+                case "Желтая зона"  -> gameController.addXPToCharacter(10);
             }
 
-            repository.deleteById(id);
+            gameController.onTaskCompleted();
 
+            repository.deleteById(id);
         }
     }
 
