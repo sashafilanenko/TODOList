@@ -15,11 +15,6 @@ public class TaskControllerTest {
     private TaskController controller;
     private TaskRepository repositoryMock;
 
-    @BeforeEach
-    void setUP(){
-        repositoryMock = Mockito.mock(TaskRepository.class);
-        controller = new TaskController(repositoryMock);
-    }
 
     @Test
     void testAddTask_ShouldSaveToRepository(){

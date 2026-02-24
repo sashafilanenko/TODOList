@@ -1,5 +1,6 @@
 package org.example.Game;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class Character {
     private List<String> avatarPaths;
 
     private String avatar;
+    private LocalDateTime createAt;
 
     public Character() {
         this.level = 1;
@@ -111,6 +113,12 @@ public class Character {
         this.streak = streak;
     }
 
+    // В Character.java добавить:
+    public void setLevel(int level) { this.level = level; updateAvatar(); }
+    public void setCurrentXP(int xp) { this.currentXP = xp; }
+    public void setNextLevelXP(int xp) { this.nextLevelXP = xp; }
+    public void setCreateAt(LocalDateTime dt) { this.createAt = dt; } // в Task.java
+    
     @Override
     public String toString() {
         return String.format("Character[Level: %d, XP: %d/%d, Streak: %d, Avatar: %s]",

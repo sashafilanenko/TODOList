@@ -1,11 +1,14 @@
 package org.example.Game;
 
+import org.example.storage.CharacterStorage;
+
 public class GameController {
     private Character character;
     private DailyStreakService dailyStreakService;
 
     public GameController() {
         this.character = new Character();
+        CharacterStorage.load(character);           // загружаем при старте
         this.dailyStreakService = new DailyStreakService();
     }
 
@@ -27,6 +30,7 @@ public class GameController {
 
     public void addXPToCharacter(int xp) {
         character.addXP(xp);
+        CharacterStorage.save(character);           // ? сохраняем сразу
     }
 
     public Character getCharacter() {
@@ -65,10 +69,7 @@ public class GameController {
         double dailyMultiplier = dailyStreakService.getStreakMultiplier();
         int total = (int)(baseXP * pomodoroMultiplier * dailyMultiplier);
         character.addXP(total);
-
-        System.out.printf("[XP] Базовый: %d ? помодоро %.1f ? стрик %.1f = +%d XP%n",
-                baseXP, pomodoroMultiplier, dailyMultiplier, total);
-
+        CharacterStorage.save(character);           // ? и тут
         return total;
     }
 }

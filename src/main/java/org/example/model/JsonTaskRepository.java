@@ -131,7 +131,7 @@ public class JsonTaskRepository implements TaskRepository {
         if (idx == -1) return 0;
         int s = idx + key.length();
         int e = s;
-        while (e < json.length() && (Character.isDigit(json.charAt(e)) || json.charAt(e) == '-')) e++;
+        while (e < json.length() && (java.lang.Character.isDigit(json.charAt(e)) || json.charAt(e) == '-')) e++;
         try { return Integer.parseInt(json.substring(s, e).trim()); }
         catch (NumberFormatException ex) { return 0; }
     }
